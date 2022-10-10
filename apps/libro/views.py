@@ -36,3 +36,12 @@ def editarAutor(request, id):
     except ObjectDoesNotExist as e:
         error = e 
     return render(request, "libro/crear_autor.html", {"autor_form":autor_form, "error": error})
+
+def eliminarAutor(request, id):
+    try:
+        autor = Autor.objects.get(id=id)
+        autor.delete()
+        return redirect("index")
+    except ObjectDoesNotExist as e:
+        error = e
+    return render(request, "libro/listar_autor.html", {"error":error})

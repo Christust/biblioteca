@@ -24,6 +24,7 @@
         <td>{{autor.descripcion}}</td>
         <td>
           <a href="{% url 'libro:editar_autor' autor.id %}">Editar</a>
+          <a href="{% url 'libro:eliminar_autor' autor.id %}">Eliminar</a>
         </td>
       </tr>
     {% endfor %}
