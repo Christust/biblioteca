@@ -15,3 +15,18 @@ class Autor(models.Model):
 
     def __str__(self):
         return self.nombre
+
+class Libro(models.Model):
+    id = models.AutoField(primary_key=True)
+    titulo = models.CharField(max_length = 250)
+    fecha_publicacion = models.DateField(blank=False, null=False)
+    autor_id = models.ManyToManyField(Autor)
+    fecha_creacion = models.DateField(auto_now = True, auto_now_add = False)
+
+    class Meta:
+        verbose_name = "libro"
+        verbose_name_plural = "Libros"
+        ordering = ["titulo"]
+
+    def __str__(self):
+        return self.titulo
