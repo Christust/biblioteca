@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 
 # Create your models here.
@@ -7,6 +8,7 @@ class Autor(models.Model):
     apellido = models.CharField(max_length=20, blank=False, null=False)
     nacionalidad = models.CharField(max_length=20, blank=False, null=False)
     descripcion = models.TextField(blank=False, null=False)
+    estado = models.BooleanField("Estado", default=True)
 
     class Meta:
         verbose_name="autor"
