@@ -2,24 +2,29 @@ from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Autor
 from . import forms
-
+from django.views.generic import TemplateView, View, ListView
 # Create your views here.
-def Home(request):
-    return render(request,"index.html")
+
+class Inicio(TemplateView):
+    template_name: str = "index.html"
+
+class ListadoAutor(ListView):
+    model = Autor
+    template_name: str = "libro/listar_autor.html"
+    queryset = Autor.objects.filter(estado=True)
+    context_object_name = "autores"
 
 def crearAutor(request):
     if request.method == "POST":
+        print(request.POST)
         autor_form = forms.AutorForm(request.POST)
+        print(autor_form.is_valid())
         if autor_form.is_valid():
             autor_form.save()
             return redirect("index")
     else:
         autor_form = forms.AutorForm()
     return render(request, "libro/crear_autor.html", {"autor_form":autor_form})
-
-def listarAutor(request):
-    autores = Autor.objects.filter(estado=True)
-    return render(request, "libro/listar_autor.html", {"autores":autores})
 
 def editarAutor(request, id):
     autor_form = None
