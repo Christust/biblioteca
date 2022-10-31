@@ -1,92 +1,121 @@
-Iniciamos el proyecto con Django ejecutando:
+# Iniciamos el proyecto
 
+Ejecutamos:
+```
 django-admin startproject <nombre del proyecto>
+```
 
 Si tenemos pipenv dentro del proyecto iniciamos un shell para controlar todos los paquetes:
-
+```
 pipenv shell
+```
 
-Dentro del proyecto tendremos que volver a instalar django para trabajar unicamente con la version que querramos y sus paquetes usando:
-
+Dentro del proyecto tendremos que volver a instalar django para trabajar unicamente con la version que deseemos y sus paquetes usando:
+```
 pipenv install Django
+```
 
 Todos los comandos pip que necesitemos se correran como pipenv por ejemplo:
+```
+pip install <paquete>
+```
 
-pip install <paquete> ---->  pipenv install <paquete>
+Pararia a ser:
+```
+pipenv install <paquete>
+```
 
-Si queremos usar algun comando de python como por ejemplo generar un requirements usamos:
+Si queremos usar algun comando de python como por ejemplo generar un requirements.txt en lugar de usar:
+```
+pip freeze > requirements.txt
+```
 
-pip freeze > requirements.txt ----> pipenv run pip freeze > requirements.txt
+Usamos:
+```
+pipenv run pip freeze > requirements.txt
+```
 
-Creamos las carpetas <contenedora de las apps> y <templates> en la raiz del proyecto.
+Creamos la carpeta contenedora de las apps y la carpeta contenedora de templates en la raiz del proyecto.
 
-Creamos una app dentro de la carpeta de aplicaciones
+Creamos una app dentro de la carpeta de apps colocandonos dentro de la carpeta y ejecutando:
+```
+django-admin startapp <nombre de la app>
+```
 
-Modificamos el name dentro de la app en apps.py como:
-
-name = '<carpeta contenedora de apps>.<app>'
+Modificamos el name dentro de la app en su archivo apps.py como:
+```
+name = '<carpeta contenedora de apps>.<nombre de la app>'
+```
 
 Registramos la app en settings.py como:
-
+```
 INSTALLED_APPS = [
     ...
-    '<carpeta contenedora de apps>.<app>'
+    '<carpeta contenedora de apps>.<nombre de la app>',
 ]
+```
 
 Configuramos el lenguaje:
-
+```
 LANGUAGE_CODE = 'es-MX'
+```
 
 Podemos correr las migraciones con:
-
+```
 python3 manage.py makemigrations
-
 python3 manage.py migrate
+```
 
 Y ver nuestro servidor local con:
-
+```
 python3 manage.py runserver
+```
 
-Cuando creamos nuestros modelos podemos registrarlos en el admin para ello podemos personalizar el como se ven usando una Admin Class:
-
-class <nombre del modelo>Admin(admin.ModelAdmin):
-...
+Cuando creamos nuestros modelos podemos registrarlos en el admin para ello podemos personalizar el como se ven usando una AdminClass:
+```
+class NombreDelModeloAdmin(admin.ModelAdmin):
+    ...
+```
 
 dentro de esta clase colocamos elementos como barras de busqueda o los elementos con los cuales se tabularan los registros en el admin site:
-
+```
 # Barra de busqueda
 search_fields = ["field1", "field2", "field3", ...]
 
 # Listado de campos para tabla
 list_display = ("field1", "field2", "field3", ...)
+```
 
 Despues registramos los modelos junto a su admin class todo esto en el admin.py de cada aplicacion:
-
-admin.site.register(<Nombre del modelo>, <Nombre de la clase admin de este modelo>)
+```
+admin.site.register(NombreDelModelo, NombreDelModeloAdmin)
+```
 
 En este proyecto se utilizara django_import_export para ello ejecutamos:
-
+```
 pipenv install django-import-export
-
+```
 
 y luego registramos en settings.py la app de import_export:
-
-# settings.py
-INSTALLED_APPS = (
+```
+INSTALLED_APPS = [
     ...
     'import_export',
-)
+]
+```
 
 Para usarlo necesitamos dentro de admin.py hacer dos importaciones:
-
+```
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
+```
 
-Despues se crea una clase que herede de resource.ModelResource y en la class Meta colocamos el modelo que lo usara.
-
+Despues se crea una clase que herede de resource.ModelResource y en la class Meta colocamos el modelo que lo usara:
+```
 class NombreDelModeloResource(resources.ModelResource):
     class Meta:
         model = NombreDelModelo
+```
 
 Finalmente agregamos una herencia mas que es ImportExportModelAdmin y el atributo resource_class el cual es la clase rescource creada anteriormente:
 
@@ -95,88 +124,103 @@ class NombreDelModeloAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     resource_class = NombreDelModeloResource
 
 Para texto enriquecido utilizamos ckeditor. Primero lo descargamos:
-
+```
 pipenv install django-ckeditor
+```
 
 Agremos a las installed_apps:
-
+```
 INSTALLED_APPS = [
     ...
     'ckeditor',
 ]
+```
 
 Y para usarlo necesitamos en el modelo a aplicar, importar su clase RichTextField y usarlo en el modelo que querramos tener con texto enriquecido:
-
+```
 from ckeditor.fields import RichTextField
 
 class NombreDelModelo(models.Model):
     ...
-    campo_con_text_enriquecido = RichTextField()
+    campo_con_texto_enriquecido = RichTextField()
     ...
+```
 
 Si queremos agregar archivos estaticos necesitamos configurar el settings.py para indicar donde se alojaran estos archivos, en nuestro caso estaran en una carpeta en la base del proyecto:
-
+```
 STATICFILES_DIRS = [
     BASE_DIR / "<nombre de la carpeta contenedora de archivos estaticos>",
 ]
+```
 
 Si queremos usarlos en nuestros templates debemos incluir al principio de todo la siguiente etiqueta:
-
+```
 {% load static %}
+```
 
-y con esto le indicamos a django que cargue los archivos estaticos y asi consumirlos usando los usemos por ejemplo:
-
+y con esto le indicamos a django que cargue los archivos estaticos y asi consumirlos usando por ejemplo:
+```
 <link
       href="{% static '<path al archivo estatico el cual debe estar en la carpeta declarada anteriormente como la contenedora de archivos estaticos>' %}"
       rel="stylesheet"
     />
+```
 
 Si necesitamos hacer consultas debemos utilizar get_object_or_404 de shortcuts para devolver un 404 en caso de no encontrar el objeto:
-
+```
 from django.shortcuts import render, get_object_or_404
 
-consulta = get_object_or_404(<NombreDelModelo>, field1 = algun_valor)
+consulta = get_object_or_404(NombreDelModelo, field1 = <algun valor>)
+```
 
 Si queremos hacer consultas que ignoren mayusculas o minusculas agregamos '__iexact' al parametro que querramos abarcar:
+```
+NombreDelModelo.objects.get(field1__iexact="algun string")
+```
 
-NombreDelModelo.objects.get(field1__iexact="Algun string")
-
-Para desplegar a heroku por ejemplo necesitamos crear una carpeta llamada settings dentro de la carpeta llamada como el proyecto. Ahi crearemos el archivo __init__.py, base.py, local.py y production.py.
+Para desplegar a heroku por ejemplo necesitamos crear una carpeta llamada settings dentro de la carpeta llamada como el proyecto. Ahi crearemos el archivo \_\_init\_\_.py, base.py, local.py y production.py.
 
 En el archivo base.py colocaremos todo el archivo de settings.py menos la configuracion de la base de datos y las variables DEBBUG y ALLOWED_HOSTS y paralelamente en los archivos local y production colocaremos solo esas secciones anteriormente mencionadas.
 
 Instalamos gunicorn:
-
+```
 pipenv install gunicorn
+```
 
 Creamos un archivo Procfile en la base del proyecto y agregamos la siguiente linea:
-
+```
 web: gunicorn <nombre del proyecto>.wsgi
+```
 
 Si hemos creado un pipenv al momento de trabajar el proyecto, para generar el requirements con todo lo necesario para el proyecto podemos usar:
-
+```
 pipenv run pip freeze > requirements.txt
+```
 
 Para crear la app desde heroku cli podemos situarnos en el proyecto y correr:
-
+```
 heroku create <nombre del proyecto sin subguiones>
+```
 
 A su vez debemos agregar heroku a los remotos para poder subirlo con git usando:
-
+```
 heroku git:remote -a <nombre de la app en heroku>
+```
 
 Despues de eso podemos ejecutar:
-
+```
 git push -u heroku master
+```
 
 Si nos aparece un error de staticfiles debemos ejecutar el comando:
-
+```
 heroku config:set DISABLE_COLLECTSTATIC=1
+```
 
 y despues ya podremos volver a corre git push a heroku.
 
 Para configurar postgres colocamos:
-
+```
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -187,31 +231,32 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+```
 
 En production y estos datos los sacamos de heroku en el ad onn de postgres en la seccion de settings y credentials.
 
 Seguido ejecutamos:
-
+```
 heroku run python manage.py makemigrations
-
 heroku run python manage.py migrate
-
+```
 
 Para servir los archivos estaticos descargamos whitenoise esto para heroku e indicarle quien nos servira los archivos:
-
+```
 pipenv install whitenoise
+```
 
 Agregamos al midleware:
-
+```
 MIDDLEWARE = [
-    # ...
+    ...
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    # ...
+    ...
 ]
-
+```
 Posteriormente en el archivo wsgi.py colocamos:
-
+```
 from pathlib import Path
 from whitenoise import WhiteNoise
 
@@ -219,11 +264,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 application = get_wsgi_application()
 application = WhiteNoise(application, root=BASE_DIR / "static")
-
+```
 
 --------------------------------------------------------
 
-Vistas basadas en clases.
+# Vistas basadas en clases.
 
 Si queremos usar vistas basadas en clases debemos usar desde django.views.generic la clase View:
 
