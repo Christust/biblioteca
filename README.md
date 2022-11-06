@@ -320,3 +320,20 @@ class NombreDeLaClase(ListView):
     context_object_name = "<nombre del objeto para la plantilla>"
 
 De lo anterior escrito solo model y template_name son necesarios, esto hara que en nuestra plantilla declara en el template_name nos mande un objecto con todos los registros del modelo declarado en model. Si nosotros deseamos un filtrado en esos registros usamos queryset, y opcionalmente si deseamos que el objeto tenga un nombre especifico usamos context_object_name, ya que si no lo declaramos se mandara un objecto con el nombre de object_list a la plantilla.
+
+Para una vista basada en clases que sea de tipo update, necesitamos usar la plantailla UpdateView la cual hace uso de cuatro parametros para configurarla:
+
+class NombreDeLaClase(UpdateView):
+    model = NombreDelModelo
+    template_name = "<nombre del html>.html"
+    form_class = forms.<Nombre del form>
+    success_url = reverse_lazy("<alguna url a la que se redirija al terminar>")
+
+Al igual que las demas vistas basadas en clases esta se utiliza en urls.py con el metodo as_view, con la condicion de que para recibir el id necesitamos declararlo como pk:
+
+path("alguna_ruta_para_editar/<int:pk>", views.NombreDeLaClase.as_view(), name="nombre_de_la_ruta"),
+
+Al igual que para utilizar el form dentro de nuestro template utilizaremos el nombre "form" para acceder a el:
+
+<div>{{form.<nombre del atributo>.label}}</div>
+<div>{{form.<nombre del atributo>}}</div>

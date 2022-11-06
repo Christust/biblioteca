@@ -1,0 +1,13 @@
+{% extends 'index.html' %}
+{% block titulo %}
+  Eliminación de Autor
+{% endblock titulo %}
+{% block body %}
+<form method="POST">
+  {% csrf_token %}
+  <h2>¿Desea elminar el registro {{ object.nombre }}?</h2>
+    <button class="btn btn-danger" type = "submit">Eliminar</button>
+    <a class="btn btn-primary" href="{% url 'libro:listar_autor' %}">Cancelar</a>
+</form>
+
+{% endblock body %}
