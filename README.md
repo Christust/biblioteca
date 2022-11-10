@@ -275,15 +275,16 @@ Si queremos usar vistas basadas en clases debemos usar desde django.views.generi
 from django.views.generic import View
 
 Y por ejemplo una vista basada en funciones que renderice un html se podria ver asi:
-
+```
 class NombreDeLaClase(View):
     def get(self, request, *args, **kwargs):
         return render(request, "template.html")
+```
 
 La clase hereda de View y la funcion get especifica que si se utiliza la clase y esta recibe un get se activara dicha funcion, ya no tenemos que verificar mediante if si el request.method es igual a por ejemplo un "GET". Esta funcion recibe por parametros el self, request, *args (si es que se van a utilizar una lista de params), **kwargs (si es que se mandan key-words arguments por los params de la funcion).
 
 Despues se debe registrar la url ahora con la clase y utilizando el metodo as_view() para que funcione correctamente:
-
+```
 from <path a la app>.views import NombreDeLaClase
 
 urlpatterns = [
@@ -291,26 +292,30 @@ urlpatterns = [
     path("<url>", NombreDeLaClase.as_view(), name="<nombre de la url para django>"),
     ...
 ]
+```
 
 De momentos View es de donde todas las demas clases heredan. Solo es una base.
 
+### TemplateView
 Cabe destacar que si se necesita solo renderizar un template, la forma correcta seria usar TemplateView el cual es una clase que hereda de View y su funcion es renderizar un template:
-
+```
 from django.views.generic import TemplateView
 
 class NombreDeLaClase(TemplateView):
     template_name: str = "template.html"
+```
 
 En la clase TemplateView solo se necesita modificar el atributo template_name con el nombre del template que se desea renderizar; el ': str' es opcional solo es tipado, el codigo anterior es la forma simplificada de:
-
+```
 class NombreDeLaClase(TemplateView):
     template_name = ""
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
-
+```
+### ListView
 Si queremos una vista basada en clases para listar los registros de un modelo usamos el ListView.
-
+```
 from django.views.generic import ListView
 
 class NombreDeLaClase(ListView):
@@ -318,22 +323,60 @@ class NombreDeLaClase(ListView):
     template_name: str = "template.html"
     queryset = NombreDelModelo.objects.filter(field1=<alguna condicion>)
     context_object_name = "<nombre del objeto para la plantilla>"
+```
 
 De lo anterior escrito solo model y template_name son necesarios, esto hara que en nuestra plantilla declara en el template_name nos mande un objecto con todos los registros del modelo declarado en model. Si nosotros deseamos un filtrado en esos registros usamos queryset, y opcionalmente si deseamos que el objeto tenga un nombre especifico usamos context_object_name, ya que si no lo declaramos se mandara un objecto con el nombre de object_list a la plantilla.
 
+### UpdateView
 Para una vista basada en clases que sea de tipo update, necesitamos usar la plantailla UpdateView la cual hace uso de cuatro parametros para configurarla:
-
+```
 class NombreDeLaClase(UpdateView):
     model = NombreDelModelo
     template_name = "<nombre del html>.html"
     form_class = forms.<Nombre del form>
     success_url = reverse_lazy("<alguna url a la que se redirija al terminar>")
+```
 
 Al igual que las demas vistas basadas en clases esta se utiliza en urls.py con el metodo as_view, con la condicion de que para recibir el id necesitamos declararlo como pk:
-
+```
 path("alguna_ruta_para_editar/<int:pk>", views.NombreDeLaClase.as_view(), name="nombre_de_la_ruta"),
+```
 
 Al igual que para utilizar el form dentro de nuestro template utilizaremos el nombre "form" para acceder a el:
-
+```
 <div>{{form.<nombre del atributo>.label}}</div>
 <div>{{form.<nombre del atributo>}}</div>
+```
+
+### CreateView
+Para una vista basada en clases que pueda crear registros utilizamos CreateView, la cual utiliza cuatro atributos:
+```
+class NombreDeLaClase(CreateView):
+    model = NombreDelModelo
+    form_class = forms.<Nombre del form>
+    template_name = "<nombre del html>.html"
+    success_url = reverse_lazy("<alguna url a la que se redirija al terminar>")
+```
+
+### DeleteView
+Para una vista basada en clases que pueda eliminar registros utilizamos DeleteView, la cual solo necesita de dos atributos:
+```
+class NombreDeLaClase(DeleteView):
+    model = NombreDelModelo
+    success_url = reverse_lazy('<alguna url a la que se redirija al terminar>')
+```
+
+Hay que tener en cuenta que esto hace una eliminación tradicional, si queremos una eliminación logica (cambiar un estado booleano en el registro en lugar de eliminar el registro), debemos redefinir el metodo post de la siguiente manera:
+
+```
+class NombreDeLaClase(DeleteView):
+    model = NombreDelModelo
+
+    def post(self, request, pk, *args, **kwargs):
+        object = NombreDelModelo.objects.get(id=pk)
+        object.estado = False
+        object.save()
+        return redirect("libro:listar_autor")
+```
+
+La clase DeleteView al ser llamada utilizara por defecto un template llamado "author_confirm_delete.html", este es el html que deberemos crear y utilizar.
