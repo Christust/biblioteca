@@ -380,3 +380,45 @@ class NombreDeLaClase(DeleteView):
 ```
 
 La clase DeleteView al ser llamada utilizara por defecto un template llamado "author_confirm_delete.html", este es el html que deberemos crear y utilizar.
+
+--------------------------------------------------------
+
+# Login y Logout.
+
+Para crear una vista de login y una de logout debemos importar la vista basada en clases de LoginView y la funcion de logout_then_login en nuestro urls.py y agregarlos a una url cada uno:
+```
+from django.contrib.auth.views import logout_then_login, LoginView
+urlpatterns = [
+    ...
+    # LoginView con el parametro template_name para dirigir el login a ese template.
+    path("", LoginView.as_view(template_name='login.html') , name="login"),
+    path("logout/", logout_then_login, name="logout")
+]
+```
+
+Agregaramos como parametro de la funcion as_view el nombre del template que queremos que funcione como vista de login el cual contendra los campos de usuario con el nombre de objeto form:
+
+```
+<form method="POST">
+    {% csrf_token %}
+    <div>
+        <label>Nombre de usuario</label>
+        {{ form.username }}
+    </div>
+    <div class="form-group">
+        <label>Contraseña</label>
+        {{ form.password }}
+    </div>
+    <button type="submit">Iniciar Sesión</button>
+</form>
+```
+
+En settings.py agregaremos dos variables de entorno para que nuestras redirecciones funcionen:
+```
+# Se definen constantes de urls para utilizar LoginView y logout_and_login 
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "index"
+```
+
+La variable LOGIN_URL define a que url se redirije al momento de hacer logout_then_login y la variable LOGIN_REDIRECT_URL nos define la url a la que iremos al hacer login de forma satisfactoria.
+
