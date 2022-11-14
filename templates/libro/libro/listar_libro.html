@@ -27,7 +27,7 @@
                       <tr>
                         <td>{{ libro.id }}</td>
                         <td>{{ libro.titulo }}</td>
-                        <td>{{ libro.fecha_creacion }}</td>
+                        <td>{{ libro.fecha_publicacion }}</td>
                         <td>
                           
                           {% for autor in libro.autor_id.all %}
@@ -36,8 +36,8 @@
                             
                         </td>
                         <td>
-                          <a href="" class="btn btn-primary">Editar</a>
-                          <a href="" class="btn btn-danger">Eliminar</a>
+                          <a href="{% url 'libro:editar_libro' libro.id%}" class="btn btn-primary">Editar</a>
+                          <a href="{% url 'libro:eliminar_libro' libro.id%}" class="btn btn-danger">Eliminar</a>
                         </td>
                       </tr>
                     {% endfor %}

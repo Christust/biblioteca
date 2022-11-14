@@ -24,6 +24,7 @@ class Libro(models.Model):
     fecha_publicacion = models.DateField(blank=False, null=False)
     autor_id = models.ManyToManyField(Autor)
     fecha_creacion = models.DateField(auto_now = True, auto_now_add = False)
+    estado = models.BooleanField("Estado", default=True)
 
     class Meta:
         verbose_name = "libro"

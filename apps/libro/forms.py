@@ -43,3 +43,36 @@ class AutorForm(forms.ModelForm):
                 }
             ),
         }
+
+class LibroForm(forms.ModelForm):
+    class Meta:
+        model = models.Libro
+        fields = ["titulo", "autor_id", "fecha_publicacion"]
+        labels = {
+            # "atributo" : "texto label para el form"
+            "titulo" : "Titulo del libro:",
+            "autor_id" : "Autores del libro:",
+            "fecha_publicacion" : "Fecha de publicación del libro:",
+        }
+        widgets = {
+            # "atributo" : form.<tipo de dato>
+            "titulo" : forms.TextInput(
+                # "atributo" : "valor"
+                attrs = {
+                    "class" : "form-control",
+                    "placeholder" : "Ingrese el titulo del libro",
+                }
+            ),
+            "autor_id" : forms.CheckboxSelectMultiple(
+                # "atributo" : "valor"
+                attrs = {
+                    "class" : "",
+                }
+            ),
+            "fecha_publicacion" : forms.SelectDateWidget(
+                # "atributo" : "valor"
+                attrs = {
+                    "class" : "form-control",
+                }
+            ),
+        }

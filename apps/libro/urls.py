@@ -9,5 +9,8 @@ urlpatterns = [
     path("listar_autor", login_required(views.ListadoAutor.as_view()), name="listar_autor"),
     path("editar_autor/<int:pk>", login_required(views.ActualizarAutor.as_view()), name="editar_autor"),
     path("eliminar_autor/<int:pk>", login_required(views.EliminarAutor.as_view()), name="eliminar_autor"),
-    path("listar_libros/", views.ListarLibro.as_view(), name="listar_libro")
+    path("listar_libros/", views.ListarLibro.as_view(), name="listar_libro"),
+    path("crear_libro/", login_required(views.CrearLibro.as_view()), name="crear_libro"),
+    path("editar_libro/<int:pk>", login_required(views.ActualizarLibro.as_view()),name="editar_libro"),
+    path("eliminar_libro/<int:pk>", login_required(views.EliminarLibro.as_view()), name="eliminar_libro"),
 ]

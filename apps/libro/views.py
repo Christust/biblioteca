@@ -40,4 +40,27 @@ class EliminarAutor(DeleteView):
 
 class ListarLibro(ListView):
     model = Libro
+    queryset = Libro.objects.filter(estado=True)
     template_name = "libro/libro/listar_libro.html"
+
+class CrearLibro(CreateView):
+    model = Libro
+    form_class = forms.LibroForm
+    template_name = "libro/libro/crear_libro.html"
+    success_url = reverse_lazy("libro:listar_libro")
+
+class ActualizarLibro(UpdateView):
+    model = Libro
+    template_name = "libro/libro/crear_libro.html"
+    form_class = forms.LibroForm
+    success_url = reverse_lazy("libro:listar_libro")
+
+class EliminarLibro(DeleteView):
+    model = Libro
+    template_name = "libro/libro/libro_confirm_delete.html"
+
+    def post(self, request, pk, *args, **kwargs):
+        object = Libro.objects.get(id=pk)
+        object.estado = False
+        object.save()
+        return redirect("libro:listar_libro")
