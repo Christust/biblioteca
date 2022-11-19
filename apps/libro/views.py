@@ -38,10 +38,28 @@ class EliminarAutor(DeleteView):
         object.save()
         return redirect("libro:listar_autor")
 
-class ListarLibro(ListView):
+class ListarLibro(View):
     model = Libro
-    queryset = Libro.objects.filter(estado=True)
+    form_class = forms.LibroForm
     template_name = "libro/libro/listar_libro.html"
+
+    def get_queryset(self):
+        return self.model.objects.filter(estado=True)
+
+    def get_context_data(self, **kwargs):
+        context = {}
+        context["object_list"] = self.get_queryset
+        context["form"] = self.form_class
+        return context
+    
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.get_context_data())
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("libro:listar_libro")
 
 class CrearLibro(CreateView):
     model = Libro
@@ -51,9 +69,15 @@ class CrearLibro(CreateView):
 
 class ActualizarLibro(UpdateView):
     model = Libro
-    template_name = "libro/libro/crear_libro.html"
+    template_name = "libro/libro/listar_libro.html"
     form_class = forms.LibroForm
     success_url = reverse_lazy("libro:listar_libro")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["object_list"] = self.model.objects.filter(estado=True)
+        return context
+    
 
 class EliminarLibro(DeleteView):
     model = Libro

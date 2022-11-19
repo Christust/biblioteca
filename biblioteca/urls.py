@@ -11,6 +11,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("inicio", login_required(Inicio.as_view()), name="index"),
     path("libro/", include(("apps.libro.urls", "libro"))),
+    path("usuario/", include(("apps.usuario.urls", "usuario"))),
     # LoginView con el parametro template_name para dirigir el login a ese template.
     path("", Login.as_view() , name="login"),
     path("logout/", logout_then_login, name="logout")
